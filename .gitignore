@@ -1,0 +1,380 @@
+# ============================================
+# Python / FastAPI Backend
+# ============================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ============================================
+# FastAPI Specific
+# ============================================
+
+# FastAPI generated files
+*.openapi.json
+*.swagger.json
+
+# ============================================
+# Frontend (React / HTML / CSS / JS)
+# ============================================
+
+# React / Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+build/
+dist/
+out/
+.next/
+.nuxt/
+.cache/
+
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# React scripts
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vite
+.vite/
+vite.config.js.*.timestamp-*
+vite.config.ts.*.timestamp-*
+
+# ============================================
+# Uploaded Files / User Data
+# ============================================
+
+# Uploaded resumes and job descriptions
+uploads/*
+uploads/
+temp/
+tmp/
+media/
+static/uploads/
+static/media/
+
+# Parsed resume JSON cache
+parsed_resumes/
+resume_cache/
+
+# Reports generated
+reports/
+output/
+exports/
+
+# ============================================
+# Database
+# ============================================
+
+# PostgreSQL
+*.db
+*.sqlite
+*.sqlite3
+postgresql-data/
+pgdata/
+
+# Vector database (FAISS)
+*.faiss
+*.index
+*.bin
+vector_store/
+
+# ============================================
+# Logs
+# ============================================
+
+logs/
+*.log
+*.log.*
+access.log
+error.log
+debug.log
+app.log
+
+# ============================================
+# IDE / Editor
+# ============================================
+
+# VS Code
+.vscode/
+*.code-workspace
+.history/
+
+# IntelliJ / PyCharm / WebStorm
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.~*
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+
+# ============================================
+# OS / System
+# ============================================
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+*.tmp
+*.temp
+
+# ============================================
+# Secrets / Credentials
+# ============================================
+
+# Never commit these!
+.env
+.env.*.local
+*.key
+*.pem
+*.crt
+*.csr
+secrets.yaml
+secrets.json
+credentials.json
+service-account.json
+.aws/
+.ssh/
+
+# API Keys
+.env.prod
+.env.staging
+*.secret
+*.private
+
+# ============================================
+# Docker
+# ============================================
+
+docker-compose.override.yml
+.dockerignore
+*.pid
+docker-data/
+*.container
+
+# ============================================
+# Testing
+# ============================================
+
+.pytest_cache/
+.vscode-test/
+test-results/
+playwright-report/
+coverage/
+
+# ============================================
+# Misc
+# ============================================
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Dump files
+*.dump
+*.sql
+
+# Model checkpoints (if any)
+*.h5
+*.pth
+*.pt
+*.onnx
+*.pb
+*.tflite
+*.joblib
+
+# ============================================
+# Project Specific
+# ============================================
+
+# HireMatch AI specific
+resume_analysis_cache/
+temp_uploads/
+session_data/
+*.pkl
+*.pickle
+
+# Embedding cache
+embeddings_cache/
+sentence_transformers_cache/
+
+# LLM response cache (to save API costs)
+llm_cache/

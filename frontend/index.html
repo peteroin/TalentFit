@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Resume Matcher</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="header-container">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                RM
+            </div>
+
+            <div>
+                <h1>Resume Matcher</h1>
+
+                <p>
+                    AI-powered candidate analysis
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <!-- =====================================================
+         ANALYSIS FORM
+    ====================================================== -->
+
+    <section
+        id="analysisSection"
+        class="analysis-section"
+    >
+
+        <div class="section-heading">
+
+            <h2>
+                Analyze Candidate
+            </h2>
+
+            <p>
+                Upload a resume and provide the job
+                requirements to calculate the match.
+            </p>
+
+        </div>
+
+
+        <div class="form-grid">
+
+            <!-- JOB REQUIREMENTS -->
+
+            <div class="card requirements-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <span class="step-number">
+                            01
+                        </span>
+
+                        <h3>
+                            Job Requirements
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <label
+                    for="requirements"
+                    class="input-label"
+                >
+                    Requirements / Job Description
+                </label>
+
+
+                <textarea
+                    id="requirements"
+                    placeholder="Paste the job description or enter the HR requirements here..."
+                ></textarea>
+
+
+                <div class="input-hint">
+
+                    Include required skills,
+                    preferred skills,
+                    experience, projects,
+                    education and certifications.
+
+                </div>
+
+            </div>
+
+
+            <!-- RESUME -->
+
+            <div class="card upload-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <span class="step-number">
+                            02
+                        </span>
+
+                        <h3>
+                            Candidate Resume
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <label
+                    for="resume"
+                    id="dropZone"
+                    class="drop-zone"
+                >
+
+                    <div class="upload-icon">
+                        ↑
+                    </div>
+
+                    <h3>
+                        Drop your resume here
+                    </h3>
+
+                    <p>
+                        or click to browse
+                    </p>
+
+                    <span>
+                        PDF or DOCX
+                    </span>
+
+                    <input
+                        type="file"
+                        id="resume"
+                        accept=".pdf,.docx"
+                        hidden
+                    >
+
+                </label>
+
+
+                <div
+                    id="selectedFile"
+                    class="selected-file hidden"
+                >
+
+                    <div class="file-icon">
+                        PDF
+                    </div>
+
+                    <div class="file-details">
+
+                        <strong id="fileName">
+                            No file selected
+                        </strong>
+
+                        <span id="fileSize">
+                        </span>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="removeFile"
+                        class="remove-file"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ANALYZE BUTTON -->
+
+        <div class="analyze-wrapper">
+
+            <button
+                id="analyzeButton"
+                class="analyze-button"
+            >
+
+                <span id="buttonText">
+                    Analyze Candidate
+                </span>
+
+            </button>
+
+        </div>
+
+
+        <!-- ERROR -->
+
+        <div
+            id="errorMessage"
+            class="error-message hidden"
+        ></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         RESULTS
+    ====================================================== -->
+
+    <section
+        id="resultsSection"
+        class="results-section hidden"
+    >
+
+        <!-- RESULT HEADER -->
+
+        <div class="results-header">
+
+            <div>
+
+                <p class="eyebrow">
+                    ANALYSIS COMPLETE
+                </p>
+
+                <h2>
+                    Candidate Match Result
+                </h2>
+
+            </div>
+
+            <button
+                id="newAnalysisButton"
+                class="secondary-button"
+            >
+                New Analysis
+            </button>
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        <div class="summary-grid">
+
+            <!-- OVERALL SCORE -->
+
+            <div class="card score-card">
+
+                <div class="score-label">
+                    Overall Match
+                </div>
+
+                <div
+                    id="overallScore"
+                    class="overall-score"
+                >
+                    0%
+                </div>
+
+                <div
+                    id="recommendation"
+                    class="recommendation"
+                >
+                    -
+                </div>
+
+            </div>
+
+
+            <!-- MANDATORY -->
+
+            <div class="card mandatory-card">
+
+                <div class="summary-title">
+                    Mandatory Requirements
+                </div>
+
+                <div
+                    id="mandatoryCount"
+                    class="mandatory-count"
+                >
+                    0 / 0 gaps
+                </div>
+
+                <div
+                    id="mandatoryStatus"
+                    class="summary-status"
+                >
+                    -
+                </div>
+
+            </div>
+
+
+            <!-- CANDIDATE -->
+
+            <div class="card candidate-card">
+
+                <div class="summary-title">
+                    Candidate
+                </div>
+
+                <h3 id="candidateName">
+                    -
+                </h3>
+
+                <p id="candidateEmail">
+                    -
+                </p>
+
+                <p id="candidatePhone">
+                    -
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             MANDATORY GAPS
+        ================================================== -->
+
+        <div
+            id="gapsCard"
+            class="card gaps-card hidden"
+        >
+
+            <div class="card-title-row">
+
+                <div>
+
+                    <span class="warning-icon">
+                        !
+                    </span>
+
+                    <h3>
+                        Mandatory Gaps
+                    </h3>
+
+                </div>
+
+            </div>
+
+            <div id="mandatoryGaps"></div>
+
+        </div>
+
+
+        <!-- =================================================
+             CATEGORY BREAKDOWN
+        ================================================== -->
+
+        <div class="card breakdown-card">
+
+            <div class="card-title-row">
+
+                <div>
+
+                    <p class="eyebrow">
+                        SCORE BREAKDOWN
+                    </p>
+
+                    <h3>
+                        Requirement Categories
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="categoryResults"
+                class="category-list"
+            >
+
+                <!-- SKILLS -->
+
+                <div class="category-row">
+
+                    <div class="category-info">
+
+                        <span>
+                            Skills
+                        </span>
+
+                        <strong id="skillsScore">
+                            0%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress-track">
+
+                        <div
+                            id="skillsProgress"
+                            class="progress-bar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EXPERIENCE -->
+
+                <div class="category-row">
+
+                    <div class="category-info">
+
+                        <span>
+                            Experience
+                        </span>
+
+                        <strong id="experienceScore">
+                            0%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress-track">
+
+                        <div
+                            id="experienceProgress"
+                            class="progress-bar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PROJECTS -->
+
+                <div class="category-row">
+
+                    <div class="category-info">
+
+                        <span>
+                            Projects
+                        </span>
+
+                        <strong id="projectsScore">
+                            0%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress-track">
+
+                        <div
+                            id="projectsProgress"
+                            class="progress-bar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EDUCATION -->
+
+                <div class="category-row">
+
+                    <div class="category-info">
+
+                        <span>
+                            Education
+                        </span>
+
+                        <strong id="educationScore">
+                            0%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress-track">
+
+                        <div
+                            id="educationProgress"
+                            class="progress-bar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CERTIFICATIONS -->
+
+                <div class="category-row">
+
+                    <div class="category-info">
+
+                        <span>
+                            Certifications
+                        </span>
+
+                        <strong id="certificationScore">
+                            0%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress-track">
+
+                        <div
+                            id="certificationProgress"
+                            class="progress-bar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             DETAIL GRID
+        ================================================== -->
+
+        <div class="details-grid">
+
+
+            <!-- SKILLS -->
+
+            <div class="card detail-card">
+
+                <div class="detail-header">
+
+                    <div>
+
+                        <p class="eyebrow">
+                            SKILLS
+                        </p>
+
+                        <h3>
+                            Required Skills
+                        </h3>
+
+                    </div>
+
+                    <span
+                        id="skillsSummary"
+                        class="detail-count"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+                <div
+                    id="skillsResults"
+                    class="result-list"
+                ></div>
+
+            </div>
+
+
+            <!-- EXPERIENCE -->
+
+            <div class="card detail-card">
+
+                <div class="detail-header">
+
+                    <div>
+
+                        <p class="eyebrow">
+                            EXPERIENCE
+                        </p>
+
+                        <h3>
+                            Experience Requirements
+                        </h3>
+
+                    </div>
+
+                    <span
+                        id="experienceSummary"
+                        class="detail-count"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+                <div
+                    id="experienceResults"
+                    class="result-list"
+                ></div>
+
+            </div>
+
+
+            <!-- PROJECTS -->
+
+            <div class="card detail-card">
+
+                <div class="detail-header">
+
+                    <div>
+
+                        <p class="eyebrow">
+                            PROJECTS
+                        </p>
+
+                        <h3>
+                            Project Requirements
+                        </h3>
+
+                    </div>
+
+                    <span
+                        id="projectsSummary"
+                        class="detail-count"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+                <div
+                    id="projectsResults"
+                    class="result-list"
+                ></div>
+
+            </div>
+
+
+            <!-- EDUCATION -->
+
+            <div class="card detail-card">
+
+                <div class="detail-header">
+
+                    <div>
+
+                        <p class="eyebrow">
+                            EDUCATION
+                        </p>
+
+                        <h3>
+                            Education Requirements
+                        </h3>
+
+                    </div>
+
+                    <span
+                        id="educationSummary"
+                        class="detail-count"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+                <div
+                    id="educationResults"
+                    class="result-list"
+                ></div>
+
+            </div>
+
+
+            <!-- CERTIFICATIONS -->
+
+            <div class="card detail-card">
+
+                <div class="detail-header">
+
+                    <div>
+
+                        <p class="eyebrow">
+                            CERTIFICATIONS
+                        </p>
+
+                        <h3>
+                            Certification Requirements
+                        </h3>
+
+                    </div>
+
+                    <span
+                        id="certificationSummary"
+                        class="detail-count"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+                <div
+                    id="certificationResults"
+                    class="result-list"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script src="/static/script.js"></script>
+
+</body>
+
+</html>
