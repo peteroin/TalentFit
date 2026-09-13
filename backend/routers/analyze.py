@@ -21,6 +21,7 @@ UPLOAD_DIR.mkdir(
     exist_ok=True
 )
 
+
 ALLOWED_EXTENSIONS = {
     ".pdf",
     ".docx"
@@ -34,6 +35,9 @@ async def analyze_resume(
 ):
     """
     Analyze a resume against HR requirements.
+
+    The uploaded resume is stored temporarily,
+    processed, and deleted after the analysis.
     """
 
     # ========================================================
@@ -51,7 +55,6 @@ async def analyze_resume(
     ).suffix.lower()
 
     if extension not in ALLOWED_EXTENSIONS:
-
         raise HTTPException(
             status_code=400,
             detail=(
@@ -61,7 +64,17 @@ async def analyze_resume(
         )
 
     # ========================================================
-    # 2. Generate unique filename
+    # 2. Validate HR requirements
+    # ========================================================
+
+    if not requirements.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="HR requirements are required."
+        )
+
+    # ========================================================
+    # 3. Generate unique temporary filename
     # ========================================================
 
     file_id = uuid.uuid4().hex
@@ -75,134 +88,142 @@ async def analyze_resume(
         saved_filename
     )
 
-    # ========================================================
-    # 3. Save uploaded file
-    # ========================================================
-
     try:
 
-        with file_path.open("wb") as buffer:
+        # ====================================================
+        # 4. Save uploaded file temporarily
+        # ====================================================
 
-            shutil.copyfileobj(
-                resume.file,
-                buffer
+        try:
+
+            with file_path.open("wb") as buffer:
+
+                shutil.copyfileobj(
+                    resume.file,
+                    buffer
+                )
+
+        except Exception as exc:
+
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to save resume."
+            ) from exc
+
+        # ====================================================
+        # 5. Extract resume text
+        # ====================================================
+
+        try:
+
+            resume_text = extract_resume_text(
+                str(file_path)
             )
 
-    except Exception as exc:
+        except Exception as exc:
 
-        raise HTTPException(
-            status_code=500,
-            detail="Failed to save resume."
-        ) from exc
+            raise HTTPException(
+                status_code=400,
+                detail="Could not extract resume text."
+            ) from exc
 
-    # ========================================================
-    # 4. Extract resume text
-    # ========================================================
+        if not resume_text.strip():
 
-    try:
-
-        resume_text = extract_resume_text(
-            str(file_path)
-        )
-
-    except Exception as exc:
-
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                f"Could not extract resume text: {exc}"
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "No text could be extracted "
+                    "from the resume."
+                )
             )
-        ) from exc
 
-    if not resume_text.strip():
+        # ====================================================
+        # 6. Extract structured resume data
+        # ====================================================
 
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                "No text could be extracted "
-                "from the resume."
+        try:
+
+            resume_data = extract_resume_data(
+                resume_text
             )
-        )
 
-    # ========================================================
-    # 5. Extract structured resume data
-    # ========================================================
+        except Exception as exc:
 
-    try:
+            raise HTTPException(
+                status_code=500,
+                detail="Resume AI extraction failed."
+            ) from exc
 
-        resume_data = extract_resume_data(
-            resume_text
-        )
+        # ====================================================
+        # 7. Extract HR requirements
+        # ====================================================
 
-    except Exception as exc:
+        try:
 
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                f"Resume AI extraction failed: {exc}"
+            hr_requirements = (
+                extract_hr_requirements(
+                    requirements
+                )
             )
-        ) from exc
 
-    # ========================================================
-    # 6. Extract HR requirements
-    # ========================================================
+        except Exception as exc:
 
-    if not requirements.strip():
+            raise HTTPException(
+                status_code=500,
+                detail="HR requirement extraction failed."
+            ) from exc
 
-        raise HTTPException(
-            status_code=400,
-            detail="HR requirements are required."
-        )
+        # ====================================================
+        # 8. Match resume against requirements
+        # ====================================================
 
-    try:
+        try:
 
-        hr_requirements = (
-            extract_hr_requirements(
-                requirements
+            match_result = match_resume(
+                resume_data,
+                hr_requirements
             )
-        )
 
-    except Exception as exc:
+        except Exception as exc:
 
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                f"HR requirement extraction failed: {exc}"
-            )
-        ) from exc
+            raise HTTPException(
+                status_code=500,
+                detail="Resume matching failed."
+            ) from exc
 
-    # ========================================================
-    # 7. Match resume against requirements
-    # ========================================================
+        # ====================================================
+        # 9. Return complete result
+        # ====================================================
 
-    try:
+        return {
+            "success": True,
 
-        match_result = match_resume(
-            resume_data,
-            hr_requirements
-        )
+            "candidate": (
+                resume_data.model_dump()
+            ),
 
-    except Exception as exc:
+            "requirements": (
+                hr_requirements.model_dump()
+            ),
 
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                f"Resume matching failed: {exc}"
-            )
-        ) from exc
+            "matching": match_result,
+        }
 
-    # ========================================================
-    # 8. Return complete result
-    # ========================================================
+    finally:
 
-    return {
-        "success": True,
+        # ====================================================
+        # 10. Delete temporary resume
+        # ====================================================
 
-        "candidate": resume_data.model_dump(),
+        try:
 
-        "requirements": (
-            hr_requirements.model_dump()
-        ),
+            if file_path.exists():
+                file_path.unlink()
 
-        "matching": match_result,
-    }
+        except Exception:
+
+            # Do not hide the actual analysis result
+            # if cleanup happens to fail.
+            pass
+
+        await resume.close()
